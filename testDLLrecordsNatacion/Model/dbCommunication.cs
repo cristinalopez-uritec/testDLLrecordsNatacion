@@ -304,5 +304,34 @@ namespace testDLLrecordsNatacion.Model
             return results;
         }
         #endregion
+
+        #region Records
+        public int InsertRecord(Record record)
+        {
+            int newRecordId = -1;
+            string query = "INSERT INTO Record (Position,MeetStatus,RecordType,AgeCategory,SwimTime,SwimCourse,SwimDistance,SwimStroke,Points,ResultId,AthleteId) " +
+                            $"VALUES (@Position,@MeetStatus,@RecordType,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@ResultId,@AthleteId); " +
+                            "SELECT SCOPE_IDENTITY();";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    parser.RecordToSqlCommandParams(record, command);
+
+                    connection.Open();
+                    newRecordId = Convert.ToInt32(command.ExecuteScalar()); //return the Id of the record inserted
+
+                    // Check Error
+                    if (newRecordId < 0)
+                    {
+                        Console.WriteLine("Error inserting data into Database!");
+                        return -1;
+                    }
+                }
+            }
+
+            return newRecordId;
+        }
+        #endregion
     }
 }

@@ -18,6 +18,7 @@ namespace testDLLrecordsNatacion
     {
         private DbCommunication dbCon = new DbCommunication();
         private LenexXmlProcesser dllXmlProcesser = new LenexXmlProcesser();
+        private ExcelRecordsImporter excelImporter = new ExcelRecordsImporter();
 
         /// <summary>
         /// Calls function that updates DB with XML file information.
@@ -25,6 +26,12 @@ namespace testDLLrecordsNatacion
         /// <param name="codeOfClub">Code of the club requesting the operation</param>
         public void ProcessXml(string codeOfClub) => dllXmlProcesser.ProcessXmlFiles(codeOfClub);
 
+
+        /// <summary>
+        /// Calls function that updates DB with Excel file information.
+        /// </summary>
+        /// <param name="codeOfClub">Code of the club requesting the operation</param>
+        public void ReadExcel(string codeOfClub) => .ProcessXmlFiles(codeOfClub);
 
         /// <summary>
         /// Fetches all data about Athletes, Events and results shown in the default view of the site.
@@ -47,5 +54,7 @@ namespace testDLLrecordsNatacion
                 };
             return updatedObjects;
         }
+
+
     }
 }

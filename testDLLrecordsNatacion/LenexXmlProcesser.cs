@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using testDLLrecordsNatacion.Model.Entities;
 using testDLLrecordsNatacion.Model;
+using testDLLrecordsNatacion.Model.Entities;
 
 namespace testDLLrecordsNatacion
 {
@@ -16,7 +17,7 @@ namespace testDLLrecordsNatacion
     internal class LenexXmlProcesser
     {
         private DbCommunication dbCon = new DbCommunication();
-        private readonly string ResourcesFolderPath = "C:\\Users\\crist\\source\\repos\\testDLLrecordsNatacion\\testDLLrecordsNatacion\\Resources\\";
+        private readonly string ResourcesFolderPath = "C:\\Users\\crist\\source\\repos\\testDLLrecordsNatacion\\testDLLrecordsNatacion\\Resources\\XmlResultsMeets\\";
 
         /// <summary>
         /// Reads the XML files in the resources folders and updates the database with the info 
@@ -33,7 +34,7 @@ namespace testDLLrecordsNatacion
             List<string> eventNodeIdsOfEventObjsToAdd = new List<string>();
 
             //TODO: might have to change the way to obtain the files, depending on project requirements
-            string[] xmlFilePaths = System.IO.Directory.GetFiles(ResourcesFolderPath);
+            string[] xmlFilePaths = Directory.GetFiles(ResourcesFolderPath); //Directory.GetFiles("./Resources/", ".xml");
 
             //Process all of the XML files at our disposal
             foreach (var filePath in xmlFilePaths)

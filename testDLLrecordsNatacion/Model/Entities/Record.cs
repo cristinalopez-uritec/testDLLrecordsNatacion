@@ -9,18 +9,23 @@ namespace testDLLrecordsNatacion.Model.Entities
     public class Record: DbEntity
     {
         public int Id;
+        public DateTime RecordDate { get; set; }
         public int Position { get; set; }
-        public string Location { get; set; }
-        public string Status { get; set; }
-        public string Type { get; set; }
-        public string ageCategory { get; set; }
-        //public int ResultId { get; set; }
-        //public int AthleteId { get; set; }
-        //public int EventId { get; set; }
+        public string MeetStatus { get; set; }
+        public string RecordType { get; set; }
+        public string AgeCategory { get; set; }
+        public string SwimTime { get; set; }
 
-        public Result Result { get; set; }
-        //public Athlete Athlete { get; set; }
-        //public Event Event { get; set; }
+        public string SwimCourse { get; set; }
+        public int SwimDistance { get; set; }
+        public string SwimStroke { get; set; }
+        public int Points { get; set; }
+
+        public int AthleteId = -1;
+        public int ResultId = -1;
+        public Athlete Athlete = null;
+        public Result Result = null;
+        public Event Event = null;
 
         public Record GetRecord(int id) {
             //TODO

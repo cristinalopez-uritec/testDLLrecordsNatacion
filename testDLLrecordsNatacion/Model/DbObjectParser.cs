@@ -107,6 +107,29 @@ namespace testDLLrecordsNatacion.Model
         }
 
         /// <summary>
+        /// Creates a Result Object based on 
+        /// the returned values of the Sql Reader
+        /// </summary>
+        /// <param name="reader">SqlReader providing the data returned by the query</param>
+        /// <returns>The Result object corresponding to that reader iteration</returns>
+        internal Result DbReaderToResult(SqlDataReader reader)
+        {
+            Result result = new Result();
+            result.Id = Int32.Parse(reader["Id"].ToString());
+            result.SplitDistance = (int)reader["SplitDistance"];
+            result.SwimTime = reader["SwimTime"].ToString();
+            result.Points = Int32.Parse(reader["Points"].ToString());
+            result.IsWaScoring = Int32.Parse(reader["IsWaScoring"].ToString());
+            result.EntryTime = reader["EntryTime"].ToString();
+            result.Comment = reader["Comment"].ToString();
+            result.AgeGroupMaxAge = Int32.Parse(reader["AgeGroupMaxAge"].ToString());
+            result.AgeGroupMinAge = Int32.Parse(reader["AgeGroupMinAge"].ToString());
+            result.EventId = Int32.Parse(reader["EventId"].ToString());
+            result.AthleteId = Int32.Parse(reader["AthleteId"].ToString());
+            return result;
+        }
+
+        /// <summary>
         /// Fills the parameters of the sql command with 
         /// the values of the attributes of the object
         /// </summary>
@@ -128,26 +151,49 @@ namespace testDLLrecordsNatacion.Model
         }
 
         /// <summary>
-        /// Creates a Result Object based on 
+        /// Creates a Record Object based on 
         /// the returned values of the Sql Reader
         /// </summary>
         /// <param name="reader">SqlReader providing the data returned by the query</param>
-        /// <returns>The Result object corresponding to that reader iteration</returns>
-        internal Result DbReaderToResult(SqlDataReader reader)
+        /// <returns>The Record object corresponding to that reader iteration</returns>
+        internal Record DbReaderToRecord(SqlDataReader reader)
         {
-            Result result = new Result();
-            result.Id = Int32.Parse(reader["Id"].ToString());
-            result.SplitDistance = (int)reader["SplitDistance"];
-            result.SwimTime = reader["SwimTime"].ToString();
-            result.Points = Int32.Parse(reader["Points"].ToString());
-            result.IsWaScoring = Int32.Parse(reader["IsWaScoring"].ToString());
-            result.EntryTime = reader["EntryTime"].ToString();
-            result.Comment = reader["Comment"].ToString();
-            result.AgeGroupMaxAge = Int32.Parse(reader["AgeGroupMaxAge"].ToString());
-            result.AgeGroupMinAge = Int32.Parse(reader["AgeGroupMinAge"].ToString());
-            result.EventId = Int32.Parse(reader["EventId"].ToString());
-            result.AthleteId = Int32.Parse(reader["AthleteId"].ToString());
-            return result;
+            Record record = new Record();
+            record.Id = Int32.Parse(reader["Id"].ToString());
+            record.Position = Int32.Parse(reader["Position"].ToString());
+            record.MeetStatus = reader["MeetStatus"].ToString();
+            record.RecordType = reader["RecordType"].ToString();
+            record.AgeCategory = reader["AgeCategory"].ToString();
+            record.SwimTime = reader["SwimTime"].ToString();
+            record.SwimDistance = (int)reader["SplitDistance"];
+            record.SwimCourse = reader["SwimCourse"].ToString();
+            record.SwimStroke = reader["SwimStroke"].ToString();
+            record.Points = Int32.Parse(reader["Points"].ToString());
+            record.ResultId = Int32.Parse(reader["ResultId"].ToString());
+            record.AthleteId = Int32.Parse(reader["AthleteId"].ToString());
+            return record;
+        }
+
+        /// <summary>
+        /// Fills the parameters of the sql command with 
+        /// the values of the attributes of the object
+        /// </summary>
+        /// <param name="record">The Record object we want to insert/update</param>
+        /// <returns>The SQL command with the parameters</returns>
+        internal SqlCommand RecordToSqlCommandParams(Record record, SqlCommand command)
+        {
+            command.Parameters.AddWithValue("@Position", record.Position);
+            command.Parameters.AddWithValue("@MeetStatus", record.MeetStatus ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@RecordType", record.RecordType ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@AgeCategory", record.AgeCategory ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@SwimTime", record.SwimTime ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@SwimDistance", record.SwimDistance);
+            command.Parameters.AddWithValue("@SwimCourse", record.SwimCourse);
+            command.Parameters.AddWithValue("@SwimStroke", record.SwimStroke);
+            command.Parameters.AddWithValue("@Points", record.Points);
+            command.Parameters.AddWithValue("@ResultId", record.ResultId);
+            command.Parameters.AddWithValue("@AthleteId", record.AthleteId);
+            return command;
         }
     }
 }
