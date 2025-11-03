@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using testDLLrecordsNatacion.Model;
 using testDLLrecordsNatacion.Model.Entities;
 
@@ -14,11 +9,11 @@ namespace testDLLrecordsNatacion
     /// It will serve as a bridge between the view and the DB 
     /// to send the data clean and organized to the frontend.
     /// </summary>
-    public class DataProcesser
+    public class RankingsNatacionApi
     {
-        private DbCommunication dbCon = new DbCommunication();
+        private DbOperations dbQueries = new DbOperations();
         private LenexXmlProcesser dllXmlProcesser = new LenexXmlProcesser();
-        private ExcelRecordsImporter excelImporter = new ExcelRecordsImporter();
+        private ExcelRecordsReader dllExcelReader = new ExcelRecordsReader();
 
         /// <summary>
         /// Calls function that updates DB with XML file information.
@@ -31,7 +26,18 @@ namespace testDLLrecordsNatacion
         /// Calls function that updates DB with Excel file information.
         /// </summary>
         /// <param name="codeOfClub">Code of the club requesting the operation</param>
-        public void ReadExcel(string codeOfClub) => .ProcessXmlFiles(codeOfClub);
+        public List<Record> ImportDataFromExcel(string codeOfClub, string filePath)
+        {
+            List<Record> recordsToInsert = dllExcelReader.ImportDataFromExcel(codeOfClub, filePath);
+
+            //TODO: insertRecordsInDb --> compare with results to see if they need to be added??? idk
+            foreach (Record record in recordsToInsert)
+            {
+                dbQueries.InsertRecord(record);
+            }
+
+            return dbQueries.SelectAllRecords();
+        }
 
         /// <summary>
         /// Fetches all data about Athletes, Events and results shown in the default view of the site.
@@ -40,9 +46,9 @@ namespace testDLLrecordsNatacion
         public Dictionary<string, object> FetchAllData()
         {
             //TODO: open db connecton here?
-            List<Athlete> updatedAthletes = dbCon.SelectAllAthletes();
-            List<Event> updatedEvents = dbCon.SelectAllEvents();
-            List<Result> updatedResults = dbCon.SelectAllResults();
+            List<Athlete> updatedAthletes = dbQueries.SelectAllAthletes();
+            List<Event> updatedEvents = dbQueries.SelectAllEvents();
+            List<Result> updatedResults = dbQueries.SelectAllResults();
             //TODO: close db connection here?
 
             //Group all of the data to send it to the frontend

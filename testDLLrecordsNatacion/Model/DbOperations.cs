@@ -16,7 +16,7 @@ namespace testDLLrecordsNatacion.Model
     /// <summary>
     /// Where all Database operations are going to be performed. 
     /// </summary>
-    internal class DbCommunication
+    internal class DbOperations
     {
         //Access connection string stored in WebConfig file of the project containing the DLL
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -56,6 +56,38 @@ namespace testDLLrecordsNatacion.Model
                 }
             }
             return athlete;
+        }
+
+        /// <summary>
+        /// Searches an athlete by its Full Name. 
+        /// If it finds it, it will return its Id and (if you want to) update its fields. 
+        /// If it doesn't, it will insert it and then return its Id.
+        /// </summary>
+        /// <param name="athleteToSearch">Full name of the athlete that you want to search for</param>
+        /// <param name="checkUpdateFields">If the athlete exists, do we want to update the athlete in the DB 
+        /// with the properties of athleteToSearch? It will give updated values to every property that does not have an empty value</param>
+        /// <returns>Id of the Athlete. -1 if fail</returns>
+        public int SearchAndInsertAthlete(Athlete athleteToSearch, bool checkUpdateFields)
+        {
+            int athleteId = -1;
+            //TODO: open db connection
+            Athlete athleteExists = SearchAthleteByName(athleteToSearch.FullName);
+
+            //Insert the athlete if it doesn't exist
+            if (athleteExists == null)
+            {
+                athleteId = InsertAthlete(athleteToSearch);
+            }
+            else
+            {
+                athleteId = athleteExists.Id;
+                if (checkUpdateFields)
+                {
+                    //TODO: check if any fields can be updated (only for LenexXML importation)
+                }
+            }
+            //TODO: close db connection
+            return athleteId;
         }
 
         /// <summary>
@@ -116,8 +148,7 @@ namespace testDLLrecordsNatacion.Model
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine(ex.Message + "\n\n" + ex.StackTrace);
-                    Log.Instance.Fatal("Failed to fetch all athletes", ex, ex.StackTrace);
+                    Log.Instance.Fatal("SelectAllAthletes failed", $"{ex.Message}\n\n{ex.StackTrace}");
                 }
                 finally
                 {
@@ -222,7 +253,7 @@ namespace testDLLrecordsNatacion.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Instance.Fatal("Failed to fetch all Events", ex, ex.StackTrace);
+                    Log.Instance.Fatal("SelectAllEvents failed", $"{ex.Message}\n\n{ex.StackTrace}");
                     Console.WriteLine(ex.Message + "\n\n" + ex.StackTrace);
                 }
                 finally
@@ -293,7 +324,7 @@ namespace testDLLrecordsNatacion.Model
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message + "\n\n" + ex.StackTrace);
+                    Log.Instance.Fatal("SelectAllResults failed", $"{ex.Message}\n\n{ex.StackTrace}");
                 }
                 finally
                 {
@@ -309,8 +340,8 @@ namespace testDLLrecordsNatacion.Model
         public int InsertRecord(Record record)
         {
             int newRecordId = -1;
-            string query = "INSERT INTO Record (Position,MeetStatus,RecordType,AgeCategory,SwimTime,SwimCourse,SwimDistance,SwimStroke,Points,ResultId,AthleteId) " +
-                            $"VALUES (@Position,@MeetStatus,@RecordType,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@ResultId,@AthleteId); " +
+            string query = "INSERT INTO Record (Position,MeetStatus,RecordDate,RecordType,AgeCategory,SwimTime,SwimCourse,SwimDistance,SwimStroke,Points,ResultId,AthleteId) " +
+                            $"VALUES (@Position,@MeetStatus,@RecordDate,@RecordType,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@ResultId,@AthleteId); " +
                             "SELECT SCOPE_IDENTITY();";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -331,6 +362,40 @@ namespace testDLLrecordsNatacion.Model
             }
 
             return newRecordId;
+        }
+
+        /// <summary>
+        /// Gets all the existing Records in the DB
+        /// </summary>
+        /// <returns>List of all existing Records</returns>
+        public List<Record> SelectAllRecords()
+        {
+            string query = "SELECT * FROM Record";
+            List<Record> records = new List<Record>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                try
+                {
+                    while (reader.Read())
+                    {
+                        records.Add(parser.DbReaderToRecord(reader));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.Fatal("SelectAllRecords failed", $"{ex.Message}\n\n{ex.StackTrace}");
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+
+            return records;
         }
         #endregion
     }

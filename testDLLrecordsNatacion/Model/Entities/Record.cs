@@ -16,7 +16,7 @@ namespace testDLLrecordsNatacion.Model.Entities
         public string AgeCategory { get; set; }
         public string SwimTime { get; set; }
 
-        public string SwimCourse { get; set; }
+        public string SwimCourse { get; set; } //aka, pool size
         public int SwimDistance { get; set; }
         public string SwimStroke { get; set; }
         public int Points { get; set; }

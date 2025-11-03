@@ -16,7 +16,7 @@ namespace testDLLrecordsNatacion
     /// </summary>
     internal class LenexXmlProcesser
     {
-        private DbCommunication dbCon = new DbCommunication();
+        private DbOperations dbQueries = new DbOperations();
         private readonly string ResourcesFolderPath = "C:\\Users\\crist\\source\\repos\\testDLLrecordsNatacion\\testDLLrecordsNatacion\\Resources\\XmlResultsMeets\\";
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace testDLLrecordsNatacion
                             string firstName = athleteNode.Attributes["firstname"].InnerText;
                             string lastName = athleteNode.Attributes["lastname"].InnerText;
                             athlete.FullName = lastName + ", " + firstName;
-                            athlete.Birthdate = DateTime.Parse(athleteNode.Attributes["birthdate"].InnerText);
+                            athlete.Birthdate = athleteNode.Attributes["birthdate"].InnerText;
                             athlete.Gender = athleteNode.Attributes["gender"].InnerText;
                             athlete.Nation = athleteNode.Attributes["nation"].InnerText;
                             athlete.License = athleteNode.Attributes["license"].InnerText;
@@ -191,22 +191,10 @@ namespace testDLLrecordsNatacion
             //insert new athletes into the database
             foreach (Athlete athlete in athletesFromClub)
             {
-                Athlete athleteExists = dbCon.SearchAthleteByName(athlete.FullName);
-                int athleteId = 0;
-
-                //Insert the athlete if needed
-                if (athleteExists == null)
-                {
-                    athleteId = dbCon.InsertAthlete(athlete);
-                }
-                else
-                {
-                    athleteId = athleteExists.Id;
-                    //TODO: if it already exists, check if it has empty fields that can be updated
-                }
-
+                int athleteId = dbQueries.SearchAndInsertAthlete(athlete, true);
+         
                 //Now insert the events and the results
-                if (athleteId != 0)
+                if (athleteId > 0)
                 {
                     //filter the results and events not related to the athlete
                     List<Result> athleteResults = resultsToInsert.Where(x => x.Athlete.Equals(athlete)).ToList();
@@ -214,7 +202,7 @@ namespace testDLLrecordsNatacion
 
                     foreach (Event evento in athleteEvents)
                     {
-                        int eventId = dbCon.InsertEvent(evento);
+                        int eventId = dbQueries.InsertEvent(evento);
 
                         //select only the filtered results after inserting the athlete and the event so we can assign the FKs 
                         List<Result> eventResultsOfTheAthlete = athleteResults.Where(x => x.Event.Equals(evento)).ToList();
@@ -222,9 +210,13 @@ namespace testDLLrecordsNatacion
                         {
                             result.AthleteId = athleteId;
                             result.EventId = eventId;
-                            dbCon.InsertResult(result);
+                            dbQueries.InsertResult(result);
                         }
                     }
+                }
+                else
+                {
+                    Log.Instance.Fatal("UpdateDbWithXmlInfo failed", $"athleteId was {athleteId}");
                 }
 
                 //TODO: now check if any of those results surpass any records

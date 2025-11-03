@@ -25,7 +25,7 @@ namespace testDLLrecordsNatacion.Model
             Athlete atleta = new Athlete();
             atleta.Id = Int32.Parse(reader["Id"].ToString());
             atleta.FullName = reader["FullName"].ToString();
-            atleta.Birthdate = DateTime.Parse(reader["Birthdate"].ToString());
+            atleta.Birthdate = reader["Birthdate"].ToString();
             atleta.Gender = reader["Gender"].ToString();
             atleta.Nation = reader["Nation"].ToString();
             atleta.License = reader["License"].ToString();
@@ -185,6 +185,7 @@ namespace testDLLrecordsNatacion.Model
             command.Parameters.AddWithValue("@Position", record.Position);
             command.Parameters.AddWithValue("@MeetStatus", record.MeetStatus ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@RecordType", record.RecordType ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@RecordDate", record.RecordDate);
             command.Parameters.AddWithValue("@AgeCategory", record.AgeCategory ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@SwimTime", record.SwimTime ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@SwimDistance", record.SwimDistance);
