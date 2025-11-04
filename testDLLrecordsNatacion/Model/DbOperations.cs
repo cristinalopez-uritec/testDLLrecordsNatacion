@@ -167,7 +167,7 @@ namespace testDLLrecordsNatacion.Model
         public int InsertAthlete(Athlete athlete)
         {
             int newAthleteId = -1;
-            string query = "INSERT INTO Athlete (FullName,Birthdate,Gender,Nation,License,ClubCode,ClubName,ClubShortName) " +
+            string query = "INSERT INTO RecordsNatacionAtleta (NombreCompleto,FechaNacimiento,Genero,Pais,Licencia,CodigoClub,NombreCompletoClub,NombreCortoClub) " +
                             "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); " +
                             "SELECT SCOPE_IDENTITY();";
 

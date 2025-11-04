@@ -33,6 +33,7 @@ namespace testDLLrecordsNatacion
             //TODO: insertRecordsInDb --> compare with results to see if they need to be added??? idk
             foreach (Record record in recordsToInsert)
             {
+                //TODO: make an InsertAllRecords query for better optimization
                 dbQueries.InsertRecord(record);
             }
 
@@ -49,6 +50,7 @@ namespace testDLLrecordsNatacion
             List<Athlete> updatedAthletes = dbQueries.SelectAllAthletes();
             List<Event> updatedEvents = dbQueries.SelectAllEvents();
             List<Result> updatedResults = dbQueries.SelectAllResults();
+            List<Record> updatedRecords = dbQueries.SelectAllRecords();
             //TODO: close db connection here?
 
             //Group all of the data to send it to the frontend
@@ -56,7 +58,8 @@ namespace testDLLrecordsNatacion
                 new Dictionary<string, object> {
                     {"Athletes", updatedAthletes }, 
                     {"Events", updatedEvents }, 
-                    {"Results", updatedResults} 
+                    {"Results", updatedResults},
+                    {"Records", updatedRecords} 
                 };
             return updatedObjects;
         }

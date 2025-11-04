@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 using testDLLrecordsNatacion.Model;
 using testDLLrecordsNatacion.Model.Entities;
 
@@ -132,6 +133,92 @@ namespace testDLLrecordsNatacion
                 }
             }
             return updatedRecordsToAdd;
+        }
+
+        /// <summary>
+        /// Importa el histórico de marcas de los nadadores 
+        /// en competiciones desde un archivo Excel y los inserta en la base de datos
+        /// </summary>
+        /// <param name="codeOfClub">Código del club interesado</param>
+        /// <param name="filePath">Ruta del archivo excel en la carpeta Temp de Resources</param>
+        public void ImportarHistoricoDeMarcasExcel(string codeOfClub, string filePath) 
+        {
+            //List<Result> marcasAnadir = new List<Result>();
+            //List<Athlete> athletesInvolved = new List<Athlete>();
+            //int colAgeCategoryName = 1;
+            //int colAthleteLicense = 2;
+            //int colAthleteName = 3;
+            //int colRecordDate = 4;
+            //int colSwimStroke = 5;
+            //int colSwimDistance = 6;
+            //int colSwimCourse = 7; //aka, pool length
+            //int colRecordType = 8;
+            //int colSwimTime = 9;
+            //int colPointsFina = 10;
+
+            //using (var stream = new MemoryStream(File.ReadAllBytes(filePath).ToArray()))
+            //{
+            //    XLWorkbook workbook = new XLWorkbook(stream);
+            //    IXLWorksheet ws = workbook.Worksheet(1); //1st one
+
+            //    foreach (var row in ws.RowsUsed())
+            //    {
+            //        if (row.RowNumber() != 1) //skip headers
+            //        {
+            //            Result marca = new Result();
+            //            marca.Athlete = new Athlete();
+            //            //record.Result = new Result();
+
+            //            bool isRowEmpty = row.CellsUsed().Select(cell => cell.Value.ToString() != "").Count() > 0 ? false : true;
+            //            if (isRowEmpty) break;
+
+            //            string ageCategoryValue = row.Cell(colAgeCategoryName).Value.ToString().Trim().Split('.')[1];
+            //            string athleteLicenseValue = row.Cell(colAthleteLicense).Value.ToString().Trim() != ""
+            //                                            ? row.Cell(colAthleteLicense).Value.ToString().Trim()
+            //                                            : null;
+            //            string athleteFullNameValue = Utils.CapitalizeString(row.Cell(colAthleteName).Value.ToString().Trim());
+            //            DateTime recordDateValue = DateTime.Parse(row.Cell(colRecordDate).Value.ToString().Trim());
+            //            string swimStrokeValue = Utils.SwimStrokeTranslatorEspToEng(row.Cell(colSwimStroke).Value.ToString().Trim());
+            //            string swimDistanceValueStr = row.Cell(colSwimDistance).Value.ToString().Trim().Split('.')[0];
+            //            int swimDistanceValue = Int32.Parse(swimDistanceValueStr.Substring(0, swimDistanceValueStr.Length - 1));
+            //            int poolLengthValue = Int32.Parse(row.Cell(colSwimCourse).Value.ToString().Trim());
+            //            string recordTypeValue = row.Cell(colRecordType).Value.ToString().Trim();
+            //            string swimTimeValue = row.Cell(colSwimTime).Value.ToString().Trim();
+            //            int pointsFinaValue = Int32.Parse(row.Cell(colPointsFina).Value.ToString().Trim());
+
+            //            //marca.AgeGroupName = ageCategoryValue;
+            //            marca.Athlete.License = athleteLicenseValue;
+            //            marca.Athlete.FullName = Utils.RemoveSpanishAccentsString(athleteFullNameValue);
+            //            marca.ResultDate = recordDateValue;
+            //            marca.SwimStroke = swimStrokeValue;
+            //            marca.SwimDistance = swimDistanceValue;
+            //            marca.SwimCourse = poolLengthValue == 50 ? "LCM" : poolLengthValue == 25 ? "SCM" : "NO INFO";
+            //            marca.RecordType = recordTypeValue == "Parcial" ? "Partial" : recordTypeValue;
+            //            marca.SwimTime = swimTimeValue;
+            //            marca.Points = pointsFinaValue;
+
+            //            marca.MeetStatus = "OFFICIAL";
+            //            marca.Position = -1;
+            //            marca.AthleteId = -1;
+            //            marca.ResultId = -1;
+            //            marca.Result = null;
+
+            //            if (athletesInvolved.Where(a => a.FullName == marca.Athlete.FullName).Count() == 0) athletesInvolved.Add(marca.Athlete);
+            //            recordsToAdd.Add(marca);
+            //        }
+            //    }
+
+            //    workbook.Dispose(); //stop reading Excel
+            //}
+            ////TODO: delete the Excel file from the Temp folder
+
+
+            ////TODO: order the records in the list and assign their positions and shit, use the same "updateRecords" function as when upload XML (function should be in DB communication)
+
+            ////consultar los atletas involucrados para obtener los ids si existen o insertarlos en DB y asociarlos
+            //marcasAnadir = AddInvolvedAthletesExcel(athletesInvolved, marcasAnadir);
+
+            // return marcasAnadir;
         }
 
     }

@@ -160,12 +160,13 @@ namespace testDLLrecordsNatacion.Model
         {
             Record record = new Record();
             record.Id = Int32.Parse(reader["Id"].ToString());
+            record.RecordDate = DateTime.Parse(reader["RecordDate"].ToString());
             record.Position = Int32.Parse(reader["Position"].ToString());
             record.MeetStatus = reader["MeetStatus"].ToString();
             record.RecordType = reader["RecordType"].ToString();
             record.AgeCategory = reader["AgeCategory"].ToString();
             record.SwimTime = reader["SwimTime"].ToString();
-            record.SwimDistance = (int)reader["SplitDistance"];
+            record.SwimDistance = (int)reader["SwimDistance"];
             record.SwimCourse = reader["SwimCourse"].ToString();
             record.SwimStroke = reader["SwimStroke"].ToString();
             record.Points = Int32.Parse(reader["Points"].ToString());
