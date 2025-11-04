@@ -8,11 +8,11 @@ namespace testDLLrecordsNatacion.Model.Entities
     {
         public int Id; //this property is not included in the .GetProperties()
         public string FullName { get; set; }
-        public string Birthdate { get; set; } = "NO INFO";
-        public string Gender { get; set; } = "X";
+        public string Birthdate { get; set; } = null;
+        public string Gender { get; set; } = null;
         public string Nation { get; set; } = null;
         public string License { get; set; } = null;
-        public int ClubCode { get; set; } = -1;
+        public int? ClubCode { get; set; } = null;
         public string ClubName { get; set; } = null;
         public string ClubShortName { get; set; } = null;
 

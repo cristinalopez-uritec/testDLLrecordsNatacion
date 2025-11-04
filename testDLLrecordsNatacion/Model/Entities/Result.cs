@@ -26,10 +26,5 @@ namespace testDLLrecordsNatacion.Model.Entities
         public Event Event; //{ get; set; }
         public Athlete Athlete; //{ get; set; }
 
-        public Result GetResultWithEventAndAthlete()
-        {
-            //TODO
-            return null;
-        }
     }
 }

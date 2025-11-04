@@ -27,10 +27,5 @@ namespace testDLLrecordsNatacion.Model.Entities
         public Result Result = null;
         public Event Event = null;
 
-        public Record GetRecord(int id) {
-            //TODO
-            return null;
-        }
-
     }
 }
