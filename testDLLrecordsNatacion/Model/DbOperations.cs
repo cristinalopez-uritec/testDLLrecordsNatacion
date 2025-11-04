@@ -167,9 +167,12 @@ namespace testDLLrecordsNatacion.Model
         public int InsertAthlete(Athlete athlete)
         {
             int newAthleteId = -1;
-            string query = "INSERT INTO RecordsNatacionAtleta (NombreCompleto,FechaNacimiento,Genero,Pais,Licencia,CodigoClub,NombreCompletoClub,NombreCortoClub) " +
-                            "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); " +
-                            "SELECT SCOPE_IDENTITY();";
+            string query = "INSERT INTO Athlete (FullName,Birthdate,Gender,Nation,License,ClubCode,ClubName,ClubShortName) " +
+                   "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); " +
+                   "SELECT SCOPE_IDENTITY();";
+            //string query = "INSERT INTO RecordsNatacionAtleta (NombreCompleto,FechaNacimiento,Genero,Pais,Licencia,CodigoClub,NombreCompletoClub,NombreCortoClub) " +
+            //                "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); " +
+            //                "SELECT SCOPE_IDENTITY();";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -280,11 +283,18 @@ namespace testDLLrecordsNatacion.Model
             string query = "INSERT INTO Result (SplitDistance,SwimTime,Points,IsWaScoring,EntryTime,Comment,AgeGroupMaxAge,AgeGroupMinAge,EventId,AthleteId) " +
                             $"VALUES (@SplitDistance,@SwimTime,@Points,@IsWaScoring,@EntryTime,@Comment,@AgeGroupMaxAge,@AgeGroupMinAge,@EventId,@AthleteId); " +
                             "SELECT SCOPE_IDENTITY();";
+            //string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,EdadMaxGrupoEdad, EdadMinGrupoEdad,DistanciaSplit,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,EsPuntuacionFina,IdAtleta,Comentario,TiempoDeEntrada) " +
+            //    $"VALUES (@ResultDate,@AgeGroupMaxAge,@AgeGroupMinAge,@SplitDistance,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@IsWaScoring,@AthleteId,@Comment,@EntryTime); " +
+            //    "SELECT SCOPE_IDENTITY();";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     parser.ResultToSqlCommandParams(result, command);
+                    command.Parameters.AddWithValue("@ResultDate", result.Event.MeetDate);
+                    command.Parameters.AddWithValue("@SwimCourse", result.Event.EventCourse);
+                    command.Parameters.AddWithValue("@SwimDistance", result.Event.SwimDistance);
+                    command.Parameters.AddWithValue("@SwimStroke", result.Event.SwimStroke);
 
                     connection.Open();
                     newResultId = Convert.ToInt32(command.ExecuteScalar()); //return the Id of the record inserted
@@ -343,6 +353,10 @@ namespace testDLLrecordsNatacion.Model
             string query = "INSERT INTO Record (Position,MeetStatus,RecordDate,RecordType,AgeCategory,SwimTime,SwimCourse,SwimDistance,SwimStroke,Points,ResultId,AthleteId) " +
                             $"VALUES (@Position,@MeetStatus,@RecordDate,@RecordType,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@ResultId,@AthleteId); " +
                             "SELECT SCOPE_IDENTITY();";
+            //string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,NombreGrupoEdad,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,IdAtleta) " +
+            //                $"VALUES (@RecordDate,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@AthleteId); " +
+            //                "SELECT SCOPE_IDENTITY();";
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
