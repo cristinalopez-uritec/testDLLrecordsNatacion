@@ -63,6 +63,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\OperacionesBD.cs" />
     <Compile Include="Model\ParseadorObjetosBD.cs" />
     <Compile Include="Model\Entities\Atleta.cs" />
     <Compile Include="Model\Entities\Competicion.cs" />

@@ -14,12 +14,12 @@ namespace testDLLrecordsNatacion.Model.Entities
         public int Puntos { get; set; }
 
         public string RecorridoNado { get; set; } = null;
-        public string DistanciaNado { get; set; } = null;
+        public int DistanciaNado { get; set; } = null;
         public int? DistanciaSplit { get; set; } = null;
         public string EstiloNado { get; set; } = null;
 
         public int? EdadAtleta { get; set; } = null;
-        public int? IdCategoraEdad { get; set; } = null;
+        public int? IdCategoriaEdad { get; set; } = null;
         public int IdAtleta { get; set; }
         public int? IdMarca { get; set; } = null;
 

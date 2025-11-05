@@ -82,119 +82,131 @@ namespace testDLLrecordsNatacion.Model
         }
 
         /// <summary>
-        /// Fills the parameters of the sql command with 
-        /// the values of the attributes of the object
+        /// Rellena los parámetros del SQL command 
+        /// con los valores de los atributos del objeto
         /// </summary>
-        /// <param name="evento">The Event object we want to insert/update</param>
-        /// <returns>The SQL command with the parameters</returns>
-        internal SqlCommand EventToSqlCommandParams(Event evento, SqlCommand command)
+        /// <param name="competicion">La Competicion que se desea insertar/actualizar</param>
+        /// <param name="command">SQL Command que realizará la consulta</param>
+        /// <returns>El comando sql con los parametros rellenados</returns>
+        internal SqlCommand CompeticionASqlCommandParams(Competicion competicion, SqlCommand command)
         {
-            command.Parameters.AddWithValue("@MeetName", evento.MeetName ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@MeetDate", evento.MeetDate);
-            command.Parameters.AddWithValue("@Nation", evento.Nation ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@City", evento.City ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@Status", evento.Status ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@PoolLength", evento.PoolLength);
-            command.Parameters.AddWithValue("@SessionNum", evento.SessionNum);
-            command.Parameters.AddWithValue("@SessionName", evento.SessionName ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@GenderCategory", evento.GenderCategory ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@EventRound", evento.EventRound ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@EventCourse", evento.EventCourse ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@SwimDistance", evento.SwimDistance);
-            command.Parameters.AddWithValue("@SwimStroke", evento.SwimStroke ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@SwimRelayCount", evento.SwimRelayCount);
+            command.Parameters.AddWithValue("@NombreCompeticion", competicion.NombreCompeticion ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@FechaCompeticion", competicion.FechaCompeticion);
+            command.Parameters.AddWithValue("@Pais", competicion.Pais ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@Ciudad", competicion.Ciudad ?? (object)DBNull.Value);
+            //command.Parameters.AddWithValue("@Status", competicion.Status ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@LongitudPiscina", competicion.LongitudPiscina);
+            command.Parameters.AddWithValue("@NumSesion", competicion.NumSesion);
+            command.Parameters.AddWithValue("@NombreSesion", competicion.NombreSesion ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@CategoriaGenero", competicion.CategoriaGenero ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@RondaEvento", competicion.RondaEvento ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@CantidadRelevosNado", competicion.CantidadRelevosNado);
             return command;
         }
 
         /// <summary>
-        /// Creates a Result Object based on 
-        /// the returned values of the Sql Reader
+        /// Crea un objeto Marca según lo devuelto por el reader
         /// </summary>
-        /// <param name="reader">SqlReader providing the data returned by the query</param>
-        /// <returns>The Result object corresponding to that reader iteration</returns>
-        internal Result DbReaderToResult(SqlDataReader reader)
+        /// <param name="reader">SqlReader que proporciona los datos</param>
+        /// <returns>La competicion correspondiente a esa iteración del reader</returns>
+        internal Marca DbReaderAMarca(SqlDataReader reader)
         {
-            Result result = new Result();
-            result.Id = Int32.Parse(reader["Id"].ToString());
-            result.SplitDistance = (int)reader["SplitDistance"];
-            result.SwimTime = reader["SwimTime"].ToString();
-            result.Points = Int32.Parse(reader["Points"].ToString());
-            result.IsWaScoring = Int32.Parse(reader["IsWaScoring"].ToString());
-            result.EntryTime = reader["EntryTime"].ToString();
-            result.Comment = reader["Comment"].ToString();
-            result.AgeGroupMaxAge = Int32.Parse(reader["AgeGroupMaxAge"].ToString());
-            result.AgeGroupMinAge = Int32.Parse(reader["AgeGroupMinAge"].ToString());
-            result.EventId = Int32.Parse(reader["EventId"].ToString());
-            result.AthleteId = Int32.Parse(reader["AthleteId"].ToString());
-            return result;
+            int? DistanciaSplit = null;
+            if (reader["DistanciaSplit"] != null && reader["DistanciaSplit"].ToString() != "") DistanciaSplit = Int32.Parse(reader["DistanciaSplit"].ToString());
+            int? IdCategoriaEdad = null;
+            //if (reader["IdCategoriaEdad"] != null && reader["IdCategoriaEdad"].ToString() != "") IdCategoriaEdad = Int32.Parse(reader["IdCategoriaEdad"].ToString());
+            int? IdEvento = null;
+            if (reader["IdEvento"] != null && reader["IdEvento"].ToString() != "") IdEvento = Int32.Parse(reader["IdEvento"].ToString());
+
+            Marca marca = new Marca();
+            marca.IdMarca = Int32.Parse(reader["IdMarca"].ToString());
+            marca.FechaMarca = DateTime.Parse(reader["FechaMarca"].ToString());
+            marca.TiempoNado = reader["TiempoNado"] != null ? reader["TiempoNado"].ToString() : null;
+            marca.Puntos = Int32.Parse(reader["Puntos"].ToString());
+            marca.Comentario = reader["Comentario"].ToString();
+            marca.RecorridoNado = reader["RecorridoNado"] != null ? reader["RecorridoNado"].ToString() : null;
+            marca.DistanciaNado = Int32.Parse(reader["DistanciaNado"].ToString());
+            marca.DistanciaSplit = DistanciaSplit;
+            marca.EstiloNado = reader["EstiloNado"] != null ? reader["EstiloNado"].ToString() : null;
+            marca.IdCategoriaEdad = IdCategoriaEdad;
+            marca.IdEvento = IdEvento;
+            marca.IdAtleta = Int32.Parse(reader["IdAtleta"].ToString());
+            return marca;
         }
 
         /// <summary>
-        /// Fills the parameters of the sql command with 
-        /// the values of the attributes of the object
+        /// Rellena los parámetros del SQL command 
+        /// con los valores de los atributos del objeto
         /// </summary>
-        /// <param name="result">The Result object we want to insert/update</param>
-        /// <returns>The SQL command with the parameters</returns>
-        internal SqlCommand ResultToSqlCommandParams(Result result, SqlCommand command)
+        /// <param name="marca">La Marca que se desea insertar/actualizar</param>
+        /// <param name="command">SQL Command que realizará la consulta</param>
+        /// <returns>El comando sql con los parametros rellenados</returns>
+        internal SqlCommand MarcaASqlCommandParams(Marca marca, SqlCommand command)
         {
-            command.Parameters.AddWithValue("@SplitDistance", result.SplitDistance);
-            command.Parameters.AddWithValue("@SwimTime", result.SwimTime ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@Points", result.Points);
-            command.Parameters.AddWithValue("@IsWaScoring", result.IsWaScoring);
-            command.Parameters.AddWithValue("@EntryTime", result.EntryTime ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@Comment", result.Comment ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@AgeGroupMaxAge", result.AgeGroupMaxAge);
-            command.Parameters.AddWithValue("@AgeGroupMinAge", result.AgeGroupMinAge);
-            command.Parameters.AddWithValue("@EventId", result.EventId);
-            command.Parameters.AddWithValue("@AthleteId", result.AthleteId);
+            command.Parameters.AddWithValue("@FechaMarca", marca.FechaMarca);
+            command.Parameters.AddWithValue("@TiempoNado", marca.TiempoNado);
+            command.Parameters.AddWithValue("@Puntos", marca.Puntos);
+            command.Parameters.AddWithValue("@Comentario", marca.Comentario ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@RecorridoNado", marca.RecorridoNado);
+            command.Parameters.AddWithValue("@DistanciaNado", marca.DistanciaNado);
+            command.Parameters.AddWithValue("@DistanciaSplit", marca.DistanciaSplit ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@EstiloNado", marca.EstiloNado);
+            command.Parameters.AddWithValue("@IdCategoriaEdad", marca.IdCategoriaEdad ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@IdAtleta", marca.IdAtleta);
+            command.Parameters.AddWithValue("@IdEvento", marca.IdEvento ?? (object)DBNull.Value);
             return command;
         }
 
         /// <summary>
-        /// Creates a Record Object based on 
-        /// the returned values of the Sql Reader
+        /// Crea un objeto Record según lo devuelto por el reader
         /// </summary>
-        /// <param name="reader">SqlReader providing the data returned by the query</param>
-        /// <returns>The Record object corresponding to that reader iteration</returns>
-        internal Record DbReaderToRecord(SqlDataReader reader)
+        /// <param name="reader">SqlReader que proporciona los datos</param>
+        /// <returns>La competicion correspondiente a esa iteración del reader</returns>
+        internal RecordESP DbReaderARecord(SqlDataReader reader)
         {
-            Record record = new Record();
-            record.Id = Int32.Parse(reader["Id"].ToString());
-            record.RecordDate = DateTime.Parse(reader["RecordDate"].ToString());
-            record.Position = Int32.Parse(reader["Position"].ToString());
-            record.MeetStatus = reader["MeetStatus"].ToString();
-            record.RecordType = reader["RecordType"].ToString();
-            record.AgeCategory = reader["AgeCategory"].ToString();
-            record.SwimTime = reader["SwimTime"].ToString();
-            record.SwimDistance = (int)reader["SwimDistance"];
-            record.SwimCourse = reader["SwimCourse"].ToString();
-            record.SwimStroke = reader["SwimStroke"].ToString();
-            record.Points = Int32.Parse(reader["Points"].ToString());
-            record.ResultId = Int32.Parse(reader["ResultId"].ToString());
-            record.AthleteId = Int32.Parse(reader["AthleteId"].ToString());
+            int? DistanciaSplit = null;
+            if (reader["DistanciaSplit"] != null && reader["DistanciaSplit"].ToString() != "") DistanciaSplit = Int32.Parse(reader["DistanciaSplit"].ToString());
+            int? IdCategoriaEdad = null;
+            if (reader["IdCategoriaEdad"] != null && reader["IdCategoriaEdad"].ToString() != "") IdCategoriaEdad = Int32.Parse(reader["IdCategoriaEdad"].ToString());
+            int? EdadAtleta = null;
+            if (reader["EdadAtleta"] != null && reader["EdadAtleta"].ToString() != "") EdadAtleta = Int32.Parse(reader["EdadAtleta"].ToString());
+            
+            RecordESP record = new RecordESP();
+            record.IdRecord = Int32.Parse(reader["IdRecord"].ToString());
+            record.IdMarca = Int32.Parse(reader["IdMarca"].ToString());
+            record.FechaRecord = DateTime.Parse(reader["FechaRecord"].ToString());
+            record.TiempoNado = reader["TiempoNado"] != null ? reader["TiempoNado"].ToString() : null;
+            record.Puntos = Int32.Parse(reader["Puntos"].ToString());
+            record.RecorridoNado = reader["RecorridoNado"] != null ? reader["RecorridoNado"].ToString() : null;
+            record.DistanciaNado = Int32.Parse(reader["DistanciaNado"].ToString());
+            record.DistanciaSplit = DistanciaSplit;
+            record.EstiloNado = reader["EstiloNado"] != null ? reader["EstiloNado"].ToString() : null;
+            record.EdadAtleta = EdadAtleta;
+            record.IdCategoriaEdad = IdCategoriaEdad;
+            record.IdAtleta = Int32.Parse(reader["IdAtleta"].ToString());
             return record;
         }
 
         /// <summary>
-        /// Fills the parameters of the sql command with 
-        /// the values of the attributes of the object
+        /// Rellena los parámetros del SQL command 
+        /// con los valores de los atributos del objeto
         /// </summary>
-        /// <param name="record">The Record object we want to insert/update</param>
-        /// <returns>The SQL command with the parameters</returns>
-        internal SqlCommand RecordToSqlCommandParams(Record record, SqlCommand command)
+        /// <param name="record">La Record que se desea insertar/actualizar</param>
+        /// <param name="command">SQL Command que realizará la consulta</param>
+        /// <returns>El comando sql con los parametros rellenados</returns>
+        internal SqlCommand RecordASqlCommandParams(RecordESP record, SqlCommand command)
         {
-            command.Parameters.AddWithValue("@Position", record.Position);
-            command.Parameters.AddWithValue("@MeetStatus", record.MeetStatus ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@RecordType", record.RecordType ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@RecordDate", record.RecordDate);
-            command.Parameters.AddWithValue("@AgeCategory", record.AgeCategory ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@SwimTime", record.SwimTime ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@SwimDistance", record.SwimDistance);
-            command.Parameters.AddWithValue("@SwimCourse", record.SwimCourse);
-            command.Parameters.AddWithValue("@SwimStroke", record.SwimStroke);
-            command.Parameters.AddWithValue("@Points", record.Points);
-            command.Parameters.AddWithValue("@ResultId", record.ResultId);
-            command.Parameters.AddWithValue("@AthleteId", record.AthleteId);
+            command.Parameters.AddWithValue("@FechaRecord", record.FechaRecord);
+            command.Parameters.AddWithValue("@TiempoNado", record.TiempoNado);
+            command.Parameters.AddWithValue("@Puntos", record.Puntos);
+            command.Parameters.AddWithValue("@RecorridoNado", record.RecorridoNado);
+            command.Parameters.AddWithValue("@DistanciaNado", record.DistanciaNado);
+            command.Parameters.AddWithValue("@DistanciaSplit", record.DistanciaSplit ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@EstiloNado", record.EstiloNado);
+            command.Parameters.AddWithValue("@EdadAtleta", record.EdadAtleta ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@IdCategoriaEdad", record.IdCategoriaEdad ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@IdAtleta", record.IdAtleta);
+            command.Parameters.AddWithValue("@IdMarca", record.IdMarca ?? (object)DBNull.Value);
             return command;
         }
     }
