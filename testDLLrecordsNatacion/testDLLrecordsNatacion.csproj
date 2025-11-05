@@ -92,6 +92,9 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Docs\SqlScripts\oldTables_EspEng.sql" />
+    <Content Include="Docs\SqlScripts\scriptUpdated_ENG.sql" />
+    <Content Include="Docs\SqlScripts\SQLQueries_recordsNatacion_castellano.sql" />
     <Content Include="Resources\uritec_spain_og_results.xml" />
     <Content Include="Resources\Final Swiss Open 2024.xml" />
     <Content Include="Resources\Swiss Open 2022 juniors results.xml" />
