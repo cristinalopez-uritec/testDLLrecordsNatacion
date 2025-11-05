@@ -25,13 +25,15 @@ namespace testDLLrecordsNatacion.Model
             Athlete atleta = new Athlete();
             atleta.Id = Int32.Parse(reader["Id"].ToString());
             atleta.FullName = reader["FullName"].ToString();
-            atleta.Birthdate = reader["Birthdate"].ToString();
-            atleta.Gender = reader["Gender"].ToString();
-            atleta.Nation = reader["Nation"].ToString();
-            atleta.License = reader["License"].ToString();
-            atleta.ClubName = reader["ClubName"].ToString();
-            atleta.ClubShortName = reader["ClubShortName"].ToString();
-            atleta.ClubCode = Int32.Parse(reader["ClubCode"].ToString());
+            atleta.Birthdate = reader["Birthdate"].ToString() != "" ? reader["Birthdate"].ToString() : null;
+            atleta.Gender = reader["Gender"].ToString() != "" ? reader["Gender"].ToString() : null;
+            atleta.Nation = reader["Nation"].ToString() != "" ? reader["Nation"].ToString() : null;
+            atleta.License = reader["License"].ToString() != "" ? reader["License"].ToString() : null;
+            atleta.ClubName = reader["ClubName"].ToString() != "" ? reader["ClubName"].ToString() : null;
+            atleta.ClubShortName = reader["ClubShortName"].ToString() != "" ? reader["ClubShortName"].ToString() : null;
+            int? clubCode = null;
+            if (reader["ClubCode"] != null && reader["ClubCode"].ToString() != "") clubCode = Int32.Parse(reader["ClubCode"].ToString());
+            atleta.ClubCode = clubCode;
             return atleta;
         }
 
@@ -44,11 +46,11 @@ namespace testDLLrecordsNatacion.Model
         internal SqlCommand AthleteToSqlCommandParams(Athlete athlete, SqlCommand command)
         {
             command.Parameters.AddWithValue("@fullName", athlete.FullName);
-            command.Parameters.AddWithValue("@birthdate", athlete.Birthdate);
+            command.Parameters.AddWithValue("@birthdate", athlete.Birthdate ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@gender", athlete.Gender ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@nation", athlete.Nation ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@license", athlete.License ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@clubCode", athlete.ClubCode);
+            command.Parameters.AddWithValue("@clubCode", athlete.ClubCode ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@clubName", athlete.ClubName ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@clubShortName", athlete.ClubShortName ?? (object)DBNull.Value);
             return command;

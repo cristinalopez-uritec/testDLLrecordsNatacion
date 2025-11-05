@@ -34,7 +34,7 @@ namespace testDLLrecordsNatacion.Model.Entities
                 string nombrePropiedad = propiedad.Name;
                 string tipoPropiedad = propiedad.PropertyType.Name;
                 object valorPropiedad = propiedad.GetValue(this);
-                string valorFormateado = valorPropiedad.ToString();
+                string valorFormateado = valorPropiedad != null ? valorPropiedad.ToString() : null;
 
                 //TODO: change formatting and dysplay options depending on datatype
 

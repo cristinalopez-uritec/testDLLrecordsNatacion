@@ -43,7 +43,7 @@ namespace testDLLrecordsNatacion.Model.Entities
             foreach (PropertyInfo property in properties)
             {
                 string propertyName = property.Name;
-                object propertyValue = property.GetValue(this) ?? "NULL";
+                object propertyValue = property.GetValue(this) != null ? property.GetValue(this) : "NULL";
 
                 attributes.Add(propertyName, propertyValue.ToString());
             }

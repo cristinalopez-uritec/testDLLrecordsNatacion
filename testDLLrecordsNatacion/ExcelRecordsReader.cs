@@ -71,6 +71,12 @@ namespace testDLLrecordsNatacion
                         string swimTimeValue = row.Cell(colSwimTime).Value.ToString().Trim();
                         int pointsFinaValue = Int32.Parse(row.Cell(colPointsFina).Value.ToString().Trim());
 
+                        DateTime skipDate = DateTime.Parse("2025-07-13 00:00:00.000");
+                        if (recordDateValue.Equals(skipDate))
+                        {
+                            break; //skip records from this date bc we already get them from the xml
+                        }
+
                         record.AgeCategory = ageCategoryValue;
                         record.Athlete.License = athleteLicenseValue;
                         record.Athlete.FullName = Utils.RemoveSpanishAccentsString(athleteFullNameValue);

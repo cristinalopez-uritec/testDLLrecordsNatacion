@@ -22,18 +22,20 @@ namespace testDLLrecordsNatacion.Model
         internal Atleta DbReaderAAtleta(SqlDataReader reader)
         {
             DateTime? fechaNaci = null;
-            if (reader["FechaNacimiento"] != null) fechaNaci = DateTime.Parse(reader["FechaNacimiento"].ToString());
-            
+            if (reader["FechaNacimiento"] != null && reader["FechaNacimiento"].ToString() != "") fechaNaci = DateTime.Parse(reader["FechaNacimiento"].ToString());
+            int? codigoClub = null;
+            if (reader["CodigoClub"] != null && reader["CodigoClub"].ToString() != "") codigoClub = Int32.Parse(reader["CodigoClub"].ToString());
+
             Atleta atleta = new Atleta();
             atleta.IdAtleta = Int32.Parse(reader["IdAtleta"].ToString());
-            atleta.NombreCompleto = reader["NombreCompleto"] != null ? reader["NombreCompleto"].ToString() : null;
+            atleta.NombreCompleto = reader["NombreCompleto"] != null && reader["NombreCompleto"].ToString() != "" ? reader["NombreCompleto"].ToString() : null;
             atleta.FechaNacimiento = fechaNaci ;
-            atleta.Genero = reader["Genero"] != null ? reader["Genero"].ToString() : null;
-            atleta.Pais = reader["Pais"] != null ? reader["Pais"].ToString() : null ;
-            atleta.Licencia = reader["Licencia"] != null ? reader["Licencia"].ToString() : null;
-            atleta.CodigoClub = Int32.Parse(reader["CodigoClub"].ToString());
-            atleta.NombreCompletoClub = reader["NombreCompletoClub"] != null ? reader["NombreCompletoClub"].ToString() : null;
-            atleta.NombreCortoClub = reader["NombreCortoClub"] != null ? reader["NombreCortoClub"].ToString() : null;
+            atleta.Genero = reader["Genero"] != null && reader["Genero"].ToString() != "" ? reader["Genero"].ToString() : null;
+            atleta.Pais = reader["Pais"] != null && reader["Pais"].ToString() != "" ? reader["Pais"].ToString() : null ;
+            atleta.Licencia = reader["Licencia"] != null && reader["Licencia"].ToString() != "" ? reader["Licencia"].ToString() : null;
+            atleta.CodigoClub = codigoClub;
+            atleta.NombreCompletoClub = reader["NombreCompletoClub"] != null && reader["NombreCompletoClub"].ToString() != "" ? reader["NombreCompletoClub"].ToString() : null;
+            atleta.NombreCortoClub = reader["NombreCortoClub"] != null && reader["NombreCortoClub"].ToString() != "" ? reader["NombreCortoClub"].ToString() : null;
             return atleta;
         }
 

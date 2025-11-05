@@ -43,7 +43,7 @@ namespace testDLLrecordsNatacion.Model.Entities
                 string propertyName = property.Name;
                 string propertyType = property.PropertyType.Name;
                 object propertyValue = property.GetValue(this);
-                string formattedValue = propertyValue.ToString();
+                string formattedValue = propertyValue != null ? propertyValue.ToString() : null;
 
                 //TODO: change formatting and dysplay options depending on datatype
 

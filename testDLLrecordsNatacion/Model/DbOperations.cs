@@ -31,6 +31,7 @@ namespace testDLLrecordsNatacion.Model
         public Athlete SearchAthleteByName(string athleteFullName)
         {
             string query = "SELECT * FROM Athlete WHERE FullName = @FullName";
+            //string query = "SELECT * FROM RecordsNatacionAtleta WHERE NombreCompleto = @FullName";
             Athlete athlete = null;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -132,6 +133,7 @@ namespace testDLLrecordsNatacion.Model
         public List<Athlete> SelectAllAthletes()
         {
             string query = "SELECT * FROM Athlete";
+            //string query = "SELECT * FROM RecordsNatacionAtleta";
             List<Athlete> atletas = new List<Athlete>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -167,12 +169,11 @@ namespace testDLLrecordsNatacion.Model
         public int InsertAthlete(Athlete athlete)
         {
             int newAthleteId = -1;
-            string query = "INSERT INTO Athlete (FullName,Birthdate,Gender,Nation,License,ClubCode,ClubName,ClubShortName) " +
+            string query = "INSERT INTO RecordsNatacionAtleta (NombreCompleto,FechaNacimiento,Genero,Pais,Licencia,CodigoClub,NombreCompletoClub,NombreCortoClub) " +
+                            "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); ";
+             query += "INSERT INTO Athlete (FullName,Birthdate,Gender,Nation,License,ClubCode,ClubName,ClubShortName) " +
                    "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); " +
                    "SELECT SCOPE_IDENTITY();";
-            //string query = "INSERT INTO RecordsNatacionAtleta (NombreCompleto,FechaNacimiento,Genero,Pais,Licencia,CodigoClub,NombreCompletoClub,NombreCortoClub) " +
-            //                "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); " +
-            //                "SELECT SCOPE_IDENTITY();";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -208,15 +209,19 @@ namespace testDLLrecordsNatacion.Model
         public int InsertEvent(Event evento)
         {
             int newEventId = -1;
-            string query = "INSERT INTO Event (MeetName,MeetDate,Nation,City,Status,PoolLength,SessionNum,SessionName,GenderCategory,EventRound,EventCourse,SwimDistance,SwimStroke,SwimRelayCount) " +
+            string query = "INSERT INTO RecordsNatacionCompeticion (NombreCompeticion,FechaCompeticion,Pais,Ciudad,LongitudPiscina,NumSesion,NombreSesion,CategoriaGenero,RondaEvento,CantidadRelevosNado) " +
+                            "VALUES (@MeetName,@MeetDate,@Nation,@City,@PoolLength,@SessionNum,@SessionName,@GenderCategory,@EventRound,@SwimRelayCount); ";
+             query += "INSERT INTO Event (MeetName,MeetDate,Nation,City,Status,PoolLength,SessionNum,SessionName,GenderCategory,EventRound,EventCourse,SwimDistance,SwimStroke,SwimRelayCount) " +
                             "VALUES (@MeetName,@MeetDate,@Nation,@City,@Status,@PoolLength,@SessionNum,@SessionName,@GenderCategory,@EventRound,@EventCourse,@SwimDistance,@SwimStroke,@SwimRelayCount); " +
                             "SELECT SCOPE_IDENTITY();";
+
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     parser.EventToSqlCommandParams(evento,command);
+                    
 
                     connection.Open();
                     newEventId = Convert.ToInt32(command.ExecuteScalar()); //return the Id of the record inserted
@@ -240,6 +245,7 @@ namespace testDLLrecordsNatacion.Model
         public List<Event> SelectAllEvents()
         {
             string query = "SELECT * FROM recordsNatacion.dbo.[Event]";
+            //string query = "SELECT * FROM RecordsNatacionCompeticion";
             List<Event> events = new List<Event>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -280,12 +286,11 @@ namespace testDLLrecordsNatacion.Model
         public int InsertResult(Result result)
         {
             int newResultId = -1;
-            string query = "INSERT INTO Result (SplitDistance,SwimTime,Points,IsWaScoring,EntryTime,Comment,AgeGroupMaxAge,AgeGroupMinAge,EventId,AthleteId) " +
+            string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,EdadMaxGrupoEdad, EdadMinGrupoEdad,DistanciaSplit,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,EsPuntuacionFina,IdAtleta,Comentario,TiempoDeEntrada) " +
+                $"VALUES (@ResultDate,@AgeGroupMaxAge,@AgeGroupMinAge,@SplitDistance,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@IsWaScoring,@AthleteId,@Comment,@EntryTime); ";
+             query += "INSERT INTO Result (SplitDistance,SwimTime,Points,IsWaScoring,EntryTime,Comment,AgeGroupMaxAge,AgeGroupMinAge,EventId,AthleteId) " +
                             $"VALUES (@SplitDistance,@SwimTime,@Points,@IsWaScoring,@EntryTime,@Comment,@AgeGroupMaxAge,@AgeGroupMinAge,@EventId,@AthleteId); " +
                             "SELECT SCOPE_IDENTITY();";
-            //string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,EdadMaxGrupoEdad, EdadMinGrupoEdad,DistanciaSplit,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,EsPuntuacionFina,IdAtleta,Comentario,TiempoDeEntrada) " +
-            //    $"VALUES (@ResultDate,@AgeGroupMaxAge,@AgeGroupMinAge,@SplitDistance,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@IsWaScoring,@AthleteId,@Comment,@EntryTime); " +
-            //    "SELECT SCOPE_IDENTITY();";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -318,6 +323,7 @@ namespace testDLLrecordsNatacion.Model
         public List<Result> SelectAllResults()
         {
             string query = "SELECT * FROM Result";
+            //string query = "SELECT * FROM RecordsNatacionMarca";
             List<Result> results = new List<Result>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -350,12 +356,12 @@ namespace testDLLrecordsNatacion.Model
         public int InsertRecord(Record record)
         {
             int newRecordId = -1;
-            string query = "INSERT INTO Record (Position,MeetStatus,RecordDate,RecordType,AgeCategory,SwimTime,SwimCourse,SwimDistance,SwimStroke,Points,ResultId,AthleteId) " +
+            string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,NombreGrupoEdad,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,IdAtleta) " +
+                            $"VALUES (@RecordDate,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@AthleteId); ";
+                            
+             query += "INSERT INTO Record (Position,MeetStatus,RecordDate,RecordType,AgeCategory,SwimTime,SwimCourse,SwimDistance,SwimStroke,Points,ResultId,AthleteId) " +
                             $"VALUES (@Position,@MeetStatus,@RecordDate,@RecordType,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@ResultId,@AthleteId); " +
                             "SELECT SCOPE_IDENTITY();";
-            //string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,NombreGrupoEdad,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,IdAtleta) " +
-            //                $"VALUES (@RecordDate,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@AthleteId); " +
-            //                "SELECT SCOPE_IDENTITY();";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -385,6 +391,7 @@ namespace testDLLrecordsNatacion.Model
         public List<Record> SelectAllRecords()
         {
             string query = "SELECT * FROM Record";
+            //string query = "";
             List<Record> records = new List<Record>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
