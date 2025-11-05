@@ -286,8 +286,8 @@ namespace testDLLrecordsNatacion.Model
         public int InsertResult(Result result)
         {
             int newResultId = -1;
-            string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,EdadMaxGrupoEdad, EdadMinGrupoEdad,DistanciaSplit,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,EsPuntuacionFina,IdAtleta,Comentario,TiempoDeEntrada) " +
-                $"VALUES (@ResultDate,@AgeGroupMaxAge,@AgeGroupMinAge,@SplitDistance,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@IsWaScoring,@AthleteId,@Comment,@EntryTime); ";
+            string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,EdadMaxGrupoEdad, EdadMinGrupoEdad,DistanciaSplit,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,EsPuntuacionFina,IdAtleta,Comentario,TiempoDeEntrada,IdEvento) " +
+                $"VALUES (@ResultDate,@AgeGroupMaxAge,@AgeGroupMinAge,@SplitDistance,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@IsWaScoring,@AthleteId,@Comment,@EntryTime,@EventId); ";
              query += "INSERT INTO Result (SplitDistance,SwimTime,Points,IsWaScoring,EntryTime,Comment,AgeGroupMaxAge,AgeGroupMinAge,EventId,AthleteId) " +
                             $"VALUES (@SplitDistance,@SwimTime,@Points,@IsWaScoring,@EntryTime,@Comment,@AgeGroupMaxAge,@AgeGroupMinAge,@EventId,@AthleteId); " +
                             "SELECT SCOPE_IDENTITY();";
@@ -419,5 +419,172 @@ namespace testDLLrecordsNatacion.Model
             return records;
         }
         #endregion
+
+
+
+        public List<Marca> SelectAllMarcas()
+        {
+            string query = "SELECT * FROM RecordsNatacionMarca";
+            List<Marca> marcas = new List<Marca>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                try
+                {
+                    while (reader.Read())
+                    {
+
+                        int? IdCategoriaEdad = null;
+                        if (reader["IdCategoriaEdad"] != null && reader["IdCategoriaEdad"].ToString() != "") IdCategoriaEdad = Int32.Parse(reader["IdCategoriaEdad"].ToString());
+                        int? IdEvento = null;
+                        if (reader["IdEvento"] != null && reader["IdEvento"].ToString() != "") IdEvento = Int32.Parse(reader["IdEvento"].ToString());
+                        int? DistanciaSplit = null;
+                        if (reader["DistanciaSplit"] != null && reader["DistanciaSplit"].ToString() != "") IdEvento = Int32.Parse(reader["DistanciaSplit"].ToString());
+
+                        Marca marca = new Marca();
+                        marca.IdMarca = Int32.Parse(reader["IdMarca"].ToString());
+                        marca.FechaMarca = DateTime.Parse(reader["FechaMarca"].ToString());
+                        marca.Puntos = Int32.Parse(reader["Puntos"].ToString());
+                        marca.Comentario = reader["Comentario"].ToString() != "" ? reader["Comentario"].ToString() : null;
+                        marca.RecorridoNado = reader["RecorridoNado"].ToString() != "" ? reader["RecorridoNado"].ToString() : null;
+                        marca.DistanciaNado = Int32.Parse(reader["DistanciaNado"].ToString());
+                        marca.DistanciaSplit = DistanciaSplit;
+                        marca.EstiloNado = reader["EstiloNado"].ToString() != "" ? reader["EstiloNado"].ToString() : null;
+                        marca.IdCategoriaEdad = IdCategoriaEdad;
+                        marca.IdAtleta = Int32.Parse(reader["IdAtleta"].ToString());
+                        marca.IdEvento = IdEvento;
+                        
+                        marcas.Add(marca);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.Fatal("SelectAllMarcas failed", $"{ex.Message}\n\n{ex.StackTrace}");
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+
+            return marcas;
+        }
+
+        public List<Marca> SelectAllRecordsPersonalesMarcas(int IdAtleta)
+        {
+            string query = @"select DISTINCT og.*
+                            from RecordsNatacionMarca og
+                            inner join (
+	                            SELECT DISTINCT MAX(PUNTOS) AS 'PuntosMax',EstiloNado,DistanciaNado,RecorridoNado,NombreGrupoEdad 
+	                            FROM RecordsNatacionMarca 
+	                            where IdAtleta = " + IdAtleta + @" and NombreGrupoEdad IS NOT NULL
+	                            GROUP BY EstiloNado,DistanciaNado,RecorridoNado,NombreGrupoEdad
+	                            HAVING (MAX(Puntos) > 0)
+                            ) as grouped on grouped.PuntosMax = og.Puntos
+	                            and grouped.DistanciaNado = og.DistanciaNado 
+	                            and grouped.EstiloNado = og.EstiloNado
+	                            and grouped.RecorridoNado = og.RecorridoNado
+	                            and grouped.NombreGrupoEdad = og.NombreGrupoEdad
+                            where og.IdAtleta = " + IdAtleta +
+                            " Order by og.EstiloNado,og.DistanciaNado,og.RecorridoNado,og.NombreGrupoEdad;";
+
+            List<Marca> marcas = new List<Marca>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                try
+                {
+                    while (reader.Read())
+                    {
+                        int? IdCategoriaEdad = null;
+                        //if (reader["IdCategoriaEdad"] != null && reader["IdCategoriaEdad"].ToString() != "") IdCategoriaEdad = Int32.Parse(reader["IdCategoriaEdad"].ToString());
+                        int? IdEvento = null;
+                        if (reader["IdEvento"] != null && reader["IdEvento"].ToString() != "") IdEvento = Int32.Parse(reader["IdEvento"].ToString());
+                        int? DistanciaSplit = null;
+                        if (reader["DistanciaSplit"] != null && reader["DistanciaSplit"].ToString() != "") IdEvento = Int32.Parse(reader["DistanciaSplit"].ToString());
+
+                        Marca marca = new Marca();
+                        marca.IdMarca = Int32.Parse(reader["IdMarca"].ToString());
+                        marca.FechaMarca = DateTime.Parse(reader["FechaMarca"].ToString());
+                        marca.Puntos = Int32.Parse(reader["Puntos"].ToString());
+                        marca.Comentario = reader["Comentario"].ToString() != "" ? reader["Comentario"].ToString() : null;
+                        marca.TiempoNado = reader["TiempoNado"].ToString() != "" ? reader["TiempoNado"].ToString() : null;
+                        marca.RecorridoNado = reader["RecorridoNado"].ToString() != "" ? reader["RecorridoNado"].ToString() : null;
+                        marca.DistanciaNado = Int32.Parse(reader["DistanciaNado"].ToString());
+                        marca.DistanciaSplit = DistanciaSplit;
+                        marca.EstiloNado = reader["EstiloNado"].ToString() != "" ? reader["EstiloNado"].ToString() : null;
+                        marca.IdCategoriaEdad = IdCategoriaEdad;
+                        marca.IdAtleta = Int32.Parse(reader["IdAtleta"].ToString());
+                        marca.IdEvento = IdEvento;
+
+                        marcas.Add(marca);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.Fatal("SelectAllMarcas failed", $"{ex.Message}\n\n{ex.StackTrace}");
+                }
+                finally
+                {
+                    reader.Close();
+                }
+            }
+
+            return marcas;
+        }
+
+        public void InsertarRecordsPersonalesMarcas()
+        {
+            List<Athlete> atletas = SelectAllAthletes();
+            List<Marca> recordsPersonales = new List<Marca>();
+            foreach ( Athlete atleta in atletas)
+            {
+                recordsPersonales.AddRange(SelectAllRecordsPersonalesMarcas(atleta.Id));
+            }
+
+            List<RecordESP> records = new List<RecordESP>();
+            foreach(Marca marca in recordsPersonales)
+            {
+                int newRecordId = -1;
+                string query = "INSERT INTO RecordsNatacionRecord (FechaRecord,TiempoNado,RecorridoNado,DistanciaNado,DistanciaSplit,EstiloNado,Puntos,IdAtleta,IdMarca) " +
+                                $"VALUES (@RecordDate,@SwimTime,@SwimCourse,@SwimDistance,@DistanciaSplit,@SwimStroke,@Points,@AthleteId,@IdMarca); ";
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@RecordDate", marca.FechaMarca);
+                        command.Parameters.AddWithValue("@AgeCategory", (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@SwimTime", marca.TiempoNado ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@DistanciaSplit", marca.DistanciaSplit ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@SwimDistance", marca.DistanciaNado);
+                        command.Parameters.AddWithValue("@SwimCourse", marca.RecorridoNado);
+                        command.Parameters.AddWithValue("@SwimStroke", marca.EstiloNado);
+                        command.Parameters.AddWithValue("@Points", marca.Puntos);
+                        command.Parameters.AddWithValue("@AthleteId", marca.IdAtleta);
+                        command.Parameters.AddWithValue("@IdMarca", marca.IdMarca);
+                        command.Parameters.AddWithValue("@EventId", marca.IdEvento);
+
+
+                        connection.Open();
+                        newRecordId = Convert.ToInt32(command.ExecuteScalar()); //return the Id of the record inserted
+
+                        // Check Error
+                        if (newRecordId < 0)
+                        {
+                            Console.WriteLine("Error inserting data into Database!");
+                            return;
+                        }
+                    }
+                }
+
+            }
+        }
     }
 }

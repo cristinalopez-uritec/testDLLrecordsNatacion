@@ -19,7 +19,7 @@ namespace testDLLrecordsNatacion.Model.Entities
         public string EstiloNado { get; set; } = null;
 
         public int? EdadAtleta { get; set; } = null;
-        public int? IdCategoriaEdad { get; set; } = null;
+        public int? IdCategoraEdad { get; set; } = null;
         public int IdAtleta { get; set; }
         public int? IdMarca { get; set; } = null;
 

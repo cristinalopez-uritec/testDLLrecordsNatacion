@@ -64,6 +64,6 @@ namespace testDLLrecordsNatacion
             return updatedObjects;
         }
 
-
+        public void InsertarRecordsEsp() => dbQueries.InsertarRecordsPersonalesMarcas();
     }
 }

@@ -15,7 +15,7 @@ namespace testDLLrecordsNatacion.Model.Entities
         public string Comentario { get; set; } = null;
 
         public string RecorridoNado { get; set; } = null;
-        public string DistanciaNado { get; set; } = null;
+        public int DistanciaNado { get; set; } = 0;
         public int? DistanciaSplit { get; set; } = null;
         public string EstiloNado { get; set; } = null;
 
