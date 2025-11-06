@@ -27,6 +27,7 @@ CREATE TABLE [dbo].[Athlete](
 select * from Athlete ORDER BY FULLNAME where id = 1
 delete from athlete
 
+use recordsNatacion
 select * from Athlete 
 select * from [Event] 
 select * from Result 

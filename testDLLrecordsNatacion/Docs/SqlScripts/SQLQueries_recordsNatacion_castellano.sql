@@ -82,7 +82,53 @@ where IdAtleta = 1 and NombreGrupoEdad IS NOT NULL
 GROUP BY EstiloNado,DistanciaNado,RecorridoNado,NombreGrupoEdad
 HAVING (MAX(Puntos) > 0)
 
-select * from RecordsNatacionMarca where IdMarca=4441
+
+/*Obtiene todas las marcas con los nombres de las fk y calcula su categoría de edad*/
+select 
+	ISNULL(
+		(SELECT catEdad.NombreCategoria 
+		from RecordsNatacionCategoriaEdad catEdad 
+		join RecordsNatacionMarca marca1 on marca1.EdadMaxGrupoEdad <= catEdad.EdadMaxima
+										and marca1.EdadMinGrupoEdad >= catEdad.EdadMinima
+		join RecordsNatacionAtleta atleta on marca.IdAtleta = atleta.IdAtleta
+									and (marca1.NombreGrupoEdad = catEdad.NombreCategoria 
+											OR atleta.Genero = catEdad.Genero)
+		where marca1.IdMarca = marca.IdMarca
+		)
+	, null) as 'NombreGrupoEdad', 
+	marca.IdMarca,
+	Format(marca.FechaMarca, 'dd/MM/yyyy') as 'FechaMarca',
+	marca.TiempoNado,
+	marca.Puntos,
+	marca.Comentario,
+	marca.RecorridoNado,
+	marca.DistanciaNado,
+	marca.DistanciaSplit,
+	marca.EstiloNado,
+	marca.IdEvento,
+	ISNULL(competi.NombreCompeticion, 'NO INFO' ) as 'NombreCompeticion',
+	marca.IdAtleta,
+	atleta.NombreCompleto as 'NombreCompletoAtleta'
+from RecordsNatacionMarca marca
+join RecordsNatacionAtleta atleta on marca.IdAtleta = atleta.IdAtleta
+left join RecordsNatacionCompeticion competi on marca.IdEvento = competi.IdCompeticion
+order by marca.FechaMarca;
+
+
+-- calcular categoria edad de una marca: 
+SELECT (SELECT catEdad.NombreCategoria --marca.*, catEdad.* 
+from RecordsNatacionCategoriaEdad catEdad 
+join RecordsNatacionMarca marca on marca.EdadMaxGrupoEdad <= catEdad.EdadMaxima
+											and marca.EdadMinGrupoEdad >= catEdad.EdadMinima
+											--and marca.NombreGrupoEdad = catEdad.NombreCategoria
+join RecordsNatacionAtleta atleta on marca.IdAtleta = atleta.IdAtleta
+									and (marca.NombreGrupoEdad = catEdad.NombreCategoria OR atleta.Genero = catEdad.Genero)
+) AS 'calcNomsCategorias'
+
+
+select record.*, atleta.NombreCompleto as 'NombreCompletoAtleta' from RecordsNatacionRecord record
+join RecordsNatacionAtleta atleta on record.IdAtleta = atleta.IdAtleta
+
 
 use recordsNatacion
 select * from RecordsNatacionAtleta
