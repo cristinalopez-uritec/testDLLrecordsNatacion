@@ -25,117 +25,114 @@ namespace testDLLrecordsNatacion.Model
 
         #region Athlete 
         /// <summary>
-        /// Searches if an athlete exists in the DB by its full name.
+        /// Busca un atleta por su nombre completo.
         /// </summary>
-        /// <param name="athleteFullName">Full name of the athlete</param>
-        /// <returns>The athelete or null if no matches were found</returns>
-        public Athlete SearchAthleteByName(string athleteFullName)
+        /// <param name="NombreCompletoAtleta">Nombre completo del atleta</param>
+        /// <returns>el atleta o null si no se encuentra en la BD</returns>
+        public Atleta BuscarAtletaPorNombre(string NombreCompletoAtleta)
         {
-            string query = "SELECT * FROM Athlete WHERE FullName = @FullName";
-            //string query = "SELECT * FROM RecordsNatacionAtleta WHERE NombreCompleto = @FullName";
-            Athlete athlete = null;
+            string query = "SELECT * FROM RecordsNatacionAtleta WHERE NombreCompleto = @NombreCompleto";
+            Atleta atleta = null;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@FullName", athleteFullName);
+                command.Parameters.AddWithValue("@NombreCompleto", NombreCompletoAtleta);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 try
                 {
                     while (reader.Read())
                     {
-                        athlete = parseador.DbReaderToAthlete(reader);
+                        atleta = parseador.DbReaderAAtleta(reader);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message + "\n\n" + ex.StackTrace);
+                    Log.Instance.Fatal("BuscarAtletaPorNombre failed", $"{ex.Message}\n\n{ex.StackTrace}");
                 }
                 finally
                 {
                     reader.Close();
                 }
             }
-            return athlete;
+            return atleta;
         }
 
         /// <summary>
-        /// Searches an athlete by its Full Name. 
-        /// If it finds it, it will return its Id and (if you want to) update its fields. 
-        /// If it doesn't, it will insert it and then return its Id.
+        /// Busca el atleta por su nombre completo.
+        /// Si lo encuentra, devuelve su Id y (si lo indicas) actualiza sus campos vacíos.
+        /// Si no lo encuentra, lo inserta en la BD y devuelve su Id.
         /// </summary>
-        /// <param name="athleteToSearch">Full name of the athlete that you want to search for</param>
-        /// <param name="checkUpdateFields">If the athlete exists, do we want to update the athlete in the DB 
-        /// with the properties of athleteToSearch? It will give updated values to every property that does not have an empty value</param>
-        /// <returns>Id of the Athlete. -1 if fail</returns>
-        public int SearchAndInsertAthlete(Athlete athleteToSearch, bool checkUpdateFields)
+        /// <param name="atletaBuscar">Nombre completo del atleta a buscar</param>
+        /// <param name="revisarActualizarCampos"> Si queremos actualizar los campos vacíos del atleta si existe.</param>
+        /// <returns>Id del atleta, -1 si falla</returns>
+        public int BuscarEInsertarAtleta(Atleta atletaBuscar, bool revisarActualizarCampos)
         {
-            int athleteId = -1;
+            int idAtleta = -1;
             //TODO: open db connection
-            Athlete athleteExists = SearchAthleteByName(athleteToSearch.FullName);
+            Atleta atletaExiste = BuscarAtletaPorNombre(atletaBuscar.NombreCompleto);
 
             //Insert the athlete if it doesn't exist
-            if (athleteExists == null)
+            if (atletaExiste == null)
             {
-                athleteId = InsertAthlete(athleteToSearch);
+                idAtleta = InsertarAtleta(atletaBuscar);
             }
             else
             {
-                athleteId = athleteExists.Id;
-                if (checkUpdateFields)
+                idAtleta = atletaExiste.IdAtleta;
+                if (revisarActualizarCampos)
                 {
                     //TODO: check if any fields can be updated (only for LenexXML importation)
                 }
             }
             //TODO: close db connection
-            return athleteId;
+            return idAtleta;
         }
 
         /// <summary>
-        /// Gets athlete info by its ID if it exists in the DB
+        /// Obtiene la información de un atleta buscándolo por su ID 
         /// </summary>
-        /// <param name="athleteId">Id of the athlete</param>
-        /// <returns>The athelete or null if no matches were found</returns>
-        public Athlete SelectAthleteById(int athleteId)
+        /// <param name="idAtleta">Id del atleta</param>
+        /// <returns>el atleta o null si no lo encuentra en la BD</returns>
+        public Atleta BuscarAtletaPorId(int idAtleta)
         {
-            string query = "SELECT * FROM Athlete WHERE id = @id";
-            Athlete athlete = null;
+            string query = "SELECT * FROM RecordsNatacionAtleta WHERE IdAtleta = @IdAtleta";
+            Atleta atleta = null;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@id", athleteId);
+                command.Parameters.AddWithValue("@IdAtleta", idAtleta);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 try
                 {
                     while (reader.Read())
                     {
-                        athlete = parseador.DbReaderToAthlete(reader);
+                        atleta = parseador.DbReaderAAtleta(reader);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message + "\n\n" + ex.StackTrace);
+                    Log.Instance.Fatal("BuscarAtletaPorId failed", $"{ex.Message}\n\n{ex.StackTrace}");
                 }
                 finally
                 {
                     reader.Close();
                 }
             }
-            return athlete; 
+            return atleta; 
         }
 
         /// <summary>
-        /// Gets all the existing athletes in the DB
+        /// Obtiene todos los atletas de la BD
         /// </summary>
-        /// <returns>List of existing athletes</returns>
-        public List<Athlete> SelectAllAthletes()
+        /// <returns>Lista de todos los atletas existentes</returns>
+        public List<Atleta> ObtenerAtletas()
         {
-            string query = "SELECT * FROM Athlete";
-            //string query = "SELECT * FROM RecordsNatacionAtleta";
-            List<Athlete> atletas = new List<Athlete>();
+            string query = "SELECT * FROM RecordsNatacionAtleta";
+            List<Atleta> atletas = new List<Atleta>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -146,12 +143,12 @@ namespace testDLLrecordsNatacion.Model
                 {
                     while (reader.Read())
                     {
-                        atletas.Add(parseador.DbReaderToAthlete(reader));
+                        atletas.Add(parseador.DbReaderAAtleta(reader));
                     }
                 }
                 catch(Exception ex)
                 {
-                    Log.Instance.Fatal("SelectAllAthletes failed", $"{ex.Message}\n\n{ex.StackTrace}");
+                    Log.Instance.Fatal("ObtenerAtletas failed", $"{ex.Message}\n\n{ex.StackTrace}");
                 }
                 finally
                 {
@@ -162,33 +159,31 @@ namespace testDLLrecordsNatacion.Model
         }
 
         /// <summary>
-        /// Adds a new athlete into the DB.
-        /// NOTE: this function does not check if the athlete already exists before adding it.
+        /// Insertar Atleta en BD.
+        /// NOTA: esta función no comprueba si dicho atleta ya existe antes de añadirlo.
         /// </summary>
-        /// <param name="athlete">the Athlete to insert</param>
-        /// <returns>Id of the athlete inserted, -1 if insert failed</returns>
-        public int InsertAthlete(Athlete athlete)
+        /// <param name="atleta">el atleta a insertar</param>
+        /// <returns>Id del atleta insertado, -1 si ha fallado</returns>
+        public int InsertarAtleta(Atleta atleta)
         {
             int newAthleteId = -1;
             string query = "INSERT INTO RecordsNatacionAtleta (NombreCompleto,FechaNacimiento,Genero,Pais,Licencia,CodigoClub,NombreCompletoClub,NombreCortoClub) " +
-                            "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); ";
-             query += "INSERT INTO Athlete (FullName,Birthdate,Gender,Nation,License,ClubCode,ClubName,ClubShortName) " +
-                   "VALUES (@fullName,@birthdate,@gender,@nation,@license,@clubCode,@clubName,@clubShortName); " +
-                   "SELECT SCOPE_IDENTITY();";
+                            "VALUES (@NombreCompleto,@FechaNacimiento,@Genero,@Pais,@Licencia,@CodigoClub,@NombreCompletoClub,@NombreCortoClub); " +
+                            "SELECT SCOPE_IDENTITY();";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    parseador.AthleteToSqlCommandParams(athlete,command);
+                    parseador.AtletaASqlCommandParams(atleta,command);
 
                     connection.Open();
-                    newAthleteId = Convert.ToInt32(command.ExecuteScalar()); //return the Id of the record inserted
+                    newAthleteId = Convert.ToInt32(command.ExecuteScalar()); //devuelve el id del atleta insertado
 
                     //Check Error
                     if (newAthleteId < 0)
                     {
-                        Console.WriteLine("Error inserting data into Database!");
+                        Log.Instance.Fatal("InsertarAtleta failed");
                         return -1;
                     }   
                 }
@@ -211,7 +206,7 @@ namespace testDLLrecordsNatacion.Model
         {
             int newEventId = -1;
             string query = "INSERT INTO RecordsNatacionCompeticion (NombreCompeticion,FechaCompeticion,Pais,Ciudad,LongitudPiscina,NumSesion,NombreSesion,CategoriaGenero,RondaEvento,CantidadRelevosNado) " +
-                            "VALUES (@MeetName,@MeetDate,@Nation,@City,@PoolLength,@SessionNum,@SessionName,@GenderCategory,@EventRound,@SwimRelayCount); " + 
+                            "VALUES (@NombreCompeticion,@FechaCompeticion,@Pais,@Ciudad,@LongitudPiscina,@NumSesion,@NombreSesion,@CategoriaGenero,@RondaEvento,@CantidadRelevosNado); " + 
                             "SELECT SCOPE_IDENTITY();";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -281,8 +276,8 @@ namespace testDLLrecordsNatacion.Model
         public int InsertarMarca(Marca marca)
         {
             int newResultId = -1;
-            string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,EdadMaxGrupoEdad, EdadMinGrupoEdad,DistanciaSplit,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,EsPuntuacionFina,IdAtleta,Comentario,TiempoDeEntrada,IdEvento) " +
-                            $"VALUES (@ResultDate,@AgeGroupMaxAge,@AgeGroupMinAge,@SplitDistance,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@IsWaScoring,@AthleteId,@Comment,@EntryTime,@EventId); "+
+            string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,EdadMaxGrupoEdad,EdadMinGrupoEdad,DistanciaSplit,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,EsPuntuacionFina,IdAtleta,Comentario,TiempoDeEntrada,IdEvento) " +
+                            $"VALUES (@FechaMarca,@EdadMaxGrupoEdad,@EdadMinGrupoEdad,@DistanciaSplit,@TiempoNado,@RecorridoNado,@DistanciaNado,@EstiloNado,@Puntos,@EsPuntuacionFina,@IdAtleta,@Comentario,@TiempoDeEntrada,@IdEvento); " +
                             "SELECT SCOPE_IDENTITY();";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -350,7 +345,7 @@ namespace testDLLrecordsNatacion.Model
         {
             int newRecordId = -1;
             string query = "INSERT INTO RecordsNatacionMarca (FechaMarca,NombreGrupoEdad,TiempoNado,RecorridoNado,DistanciaNado,EstiloNado,Puntos,IdAtleta) " +
-                            $"VALUES (@RecordDate,@AgeCategory,@SwimTime,@SwimCourse,@SwimDistance,@SwimStroke,@Points,@AthleteId); " +
+                            $"VALUES (@FechaMarca,@NombreGrupoEdad,@TiempoNado,@RecorridoNado,@DistanciaNado,@EstiloNado,@Puntos,@IdAtleta); " +
                             "SELECT SCOPE_IDENTITY();";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -469,11 +464,11 @@ namespace testDLLrecordsNatacion.Model
         /// </summary>
         public void InsertarRecordsPersonalesMarcas()
         {
-            List<Athlete> atletas = SelectAllAthletes();
+            List<Atleta> atletas = ObtenerAtletas();
             List<Marca> recordsPersonales = new List<Marca>();
-            foreach ( Athlete atleta in atletas)
+            foreach (Atleta atleta in atletas)
             {
-                recordsPersonales.AddRange(ObtenerRecordsPersonalesMarcas(atleta.Id));
+                recordsPersonales.AddRange(ObtenerRecordsPersonalesMarcas(atleta.IdAtleta));
             }
 
             List<RecordESP> records = new List<RecordESP>();

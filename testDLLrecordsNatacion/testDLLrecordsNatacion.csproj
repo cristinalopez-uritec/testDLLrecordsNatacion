@@ -103,6 +103,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Docs\ExcelDatosTenis\recordsClub__Listado_de_Marcas p25.xlsx" />
+    <None Include="Docs\ExcelDatosTenis\recordsClub__Listado_de_Marcas p50.xlsx" />
+    <None Include="Docs\ExcelDatosTenis\Récords y mejores marcas club pamplona.xlsx" />
+    <None Include="Docs\Notas docu XML LENEX _archivo resultados oficiales.one" />
     <None Include="NLog.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
