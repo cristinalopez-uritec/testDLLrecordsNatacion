@@ -63,6 +63,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LectorRegistrosExcel.cs" />
+    <Compile Include="ProcesadorXmlLenex.cs" />
     <Compile Include="Model\OperacionesBD.cs" />
     <Compile Include="Model\ParseadorObjetosBD.cs" />
     <Compile Include="Model\Entities\Atleta.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Model\Entities\Marca.cs" />
     <Compile Include="Model\Entities\RecordESP.cs" />
     <Compile Include="Model\Entities\CategoriaEdad.cs" />
+    <Compile Include="RankingsNatacionApiESP.cs" />
     <Compile Include="RankingsNatacionApi.cs" />
     <Compile Include="ExcelRecordsReader.cs" />
     <Compile Include="LenexXmlProcesser.cs" />

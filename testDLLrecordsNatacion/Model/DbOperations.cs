@@ -19,7 +19,7 @@ namespace testDLLrecordsNatacion.Model
     internal class DbOperations
     {
         //Access connection string stored in WebConfig file of the project containing the DLL
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+        private readonly string connectionString = ConfigurationManager.ConnectionStrings["Datos"].ConnectionString;
         private readonly Parser parser = new Parser();
 
         #region Athlete 
